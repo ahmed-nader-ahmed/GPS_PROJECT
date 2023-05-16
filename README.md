@@ -147,7 +147,6 @@ void UART5_write(char c) {
 
 //----------UART0----------------------
 void UART0Init() {
-	// 1st give it clk
 	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R0;
 	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0;
 	UART0_CTL_R &= ~UART_CTL_UARTEN;
