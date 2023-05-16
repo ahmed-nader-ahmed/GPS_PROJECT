@@ -20,11 +20,6 @@ char c;
 char STRING_DISTANCE[20];
 char valid = 0;
 
-// 3003.51070  latitude  HOME COORDINATES
-// 3120.68361 longitude HOME COORDINATES
-
-
-
 float currentLat = 3003.83607, cuurentLong = 3116.73446; // CREDIT BUILDING
 float distance = 0;
 float latitude_number = 0; //3003.71417
@@ -62,8 +57,6 @@ float ToRad(float angle){
 	//printf("\n ==== %f\n", ((degree+(minutes/60))));
 	return ((degree+(minutes/60)) * (PI/180));
 }
-
-
 
 float GPS_getDistance(float currentLat, float cuurentLong, float destLat, float destLong){
 	//Get Radian Angle
@@ -125,31 +118,23 @@ void ftoa(float n, char* res, int afterpoint) {
 
 //----------UART5----------------------
 void UART5Init() {
-	// 1st give it clk
-	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R5; // INITIALIZE CLK OF UART
-	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R4; // INITIALIZE CLK OF PORT
-	// NO NEED TO DELAY
-	// disable uart
-	UART5_CTL_R &= ~UART_CTL_UARTEN; // 0x01
-	// set Baud rate divider, BR = 9600 bits/sec
-	// BR = 16*10^6/(16*9600) = 104.16667
+	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R5;
+	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R4;
+	UART5_CTL_R &= ~UART_CTL_UARTEN;
 	UART5_IBRD_R = 104;
-	// 0.16667=>
 	UART5_FBRD_R = 11;
-	//UART0_CC_R = UART_CC_CS_SYSCLK;
 	UART5_LCRH_R = (UART_LCRH_WLEN_8 | UART_LCRH_FEN);
 	UART5_CTL_R |= (UART_CTL_UARTEN | UART_CTL_RXE | UART_CTL_TXE);
 	GPIO_PORTE_AFSEL_R |= 0x30;
 	GPIO_PORTE_PCTL_R = (GPIO_PORTE_PCTL_R & ~0x00ff0000) | (GPIO_PCTL_PE4_U5RX | GPIO_PCTL_PE5_U5TX);
 	GPIO_PORTE_DEN_R |= 0x30;
-GPIO_PORTE_AMSEL_R = 0;
+	GPIO_PORTE_AMSEL_R = 0;
 }
 
 uint8_t UART5_ReadAvailable(void) {
 	return ((UART5_FR_R & UART_FR_RXFE) == UART_FR_RXFE) ? 0:1;
 }
 
-//func read data from uart
 char UART5_read() {
 	while((UART5_ReadAvailable()) != 1);
 	return UART5_DR_R & 0xFF;
@@ -201,14 +186,14 @@ void printStr0(char *str) {
 void PortFInit() {
 	SYSCTL_RCGCGPIO_R |=0x20;
 	while((SYSCTL_PRGPIO_R & 0x20)==0){};
-	GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY; //no need
-	GPIO_PORTF_CR_R |= 0X0E; //no need
+	GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
+	GPIO_PORTF_CR_R |= 0X0E;
 	GPIO_PORTF_AMSEL_R &= ~0X0E;
 	GPIO_PORTF_PCTL_R &= ~0X0000FFF0;
 	GPIO_PORTF_AFSEL_R &= ~0X0E;
 	GPIO_PORTF_DEN_R |= 0X0E;
 	GPIO_PORTF_DIR_R |= 0X0E;
-	GPIO_PORTF_DATA_R &=~0X0E; // initialized to be all leds are off
+	GPIO_PORTF_DATA_R &=~0X0E;
 }
 
 void RGB_set(uint8_t mask) {
@@ -221,12 +206,7 @@ void RGB_clear(uint8_t mask) {
 	GPIO_PORTF_DATA_R &= ~mask;
 }
 
-
-
 int flag_init = 1;
-
-
-
 
 //----------MAIN----------------------
 int main(){
@@ -262,7 +242,6 @@ int main(){
 									
 									i_uart = 7;
 									while (c != '$') {
-										//printStr0(&c);
 										c = UART5_read();
 										container_of_gps_readings[i_uart] = c;
 										i_uart++;
@@ -276,9 +255,7 @@ int main(){
 									printStr0("\33[2K\r");
 									printStr0("\n");
 									//---------------------------
-									
-									
-																
+															
 									number_of_comma = 0;
 									i = 0;j=0;
 									// get Latitude and longitude STRINGS if VALID
@@ -386,8 +363,7 @@ int main(){
 										
 										latitude[0] = '\0';
 										longitude[0] = '\0';
-										
-										
+											
 									}
 									
 								}
